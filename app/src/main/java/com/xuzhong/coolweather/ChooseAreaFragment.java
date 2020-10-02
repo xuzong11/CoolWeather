@@ -127,7 +127,8 @@ public class ChooseAreaFragment extends Fragment {
             listView.setSelection(0);
             currentLevel = LEVEL_PROVINCE;
         } else {
-            //如果没有读取到就按照14.1节讲述的接口组装出一个请求地址，然后调用queryFromServer()方法来从服务器上查询数据。
+            //AndroidManifest.xml中加入android:usesCleartextTraffic="true" 允许http请求
+            //如果没有读取到就照14.1节讲述的接口组装出一个请求地址按，然后调用queryFromServer()方法来从服务器上查询数据。
             String address = "http://guolin.tech/api/china";
             queryFromServer(address, "province");
         }
