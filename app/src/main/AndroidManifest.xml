@@ -3,9 +3,9 @@
     package="com.xuzhong.coolweather">
 
     <uses-permission android:name="android.permission.INTERNET" />
-
+<!-- android:name=".MyApplication"-->
     <application
-        android:name=".MyApplication"
+        android:name="org.litepal.LitePalApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"

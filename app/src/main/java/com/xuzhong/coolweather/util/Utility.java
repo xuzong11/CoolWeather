@@ -20,6 +20,7 @@ public class Utility {
     /**
      * 解析和处理服务器返回的省级数据
      * TextUtils类是系统自带的一个工具类,JSONArray由JSONObject构成的数组
+     * 先使用JSONArray和JSONObject将数据解析出来，然后组装成实体类对象，再调用save()方法将数据存储到数据库当中
      */
     public static boolean handleProvinceResponse(String response) {
         //如果为空直接返回false
@@ -29,6 +30,7 @@ public class Utility {
                 //循环取得JSONNbject对象
                 for (int i = 0; i < allProvinces.length(); i++) {
                     JSONObject provinceObject = allProvinces.getJSONObject(i);
+                    //省类的实例
                     Province province = new Province();
                     //获取省份名称和ID，保存到Province类
                     province.setProvinceName(provinceObject.getString("name"));

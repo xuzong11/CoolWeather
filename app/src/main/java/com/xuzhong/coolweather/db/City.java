@@ -2,6 +2,11 @@ package com.xuzhong.coolweather.db;
 
 import org.litepal.crud.DataSupport;
 
+/**
+ * 市  {"id":114,"name":"无锡"}
+ * 引入org.litepal.crud.DataSupport，会自动建立类相应的数据库，表
+ */
+
 public class City extends DataSupport {
     private int id;
     private String cityName;

@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!--引入各个部分的布局
+<?xml version="1.0" encoding="utf-8"?>
+<!--引入各个部分的布局
 最外层布局使用了一个FrameLayout，并将它的背景色设置成colorPrimary。
 然后在FrameLayout中嵌套了一个ScrollView，这是因为天气界面中的内容比较多，
 使用ScrollView可以允许我们通过滚动的方式查看屏幕以外的内容
@@ -9,7 +10,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary">
-
+    <!--背景图片-->
     <ImageView
         android:id="@+id/bing_pic_img"
         android:layout_width="match_parent"
@@ -20,20 +21,20 @@
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <!--作为主屏幕中显示的内容-->
+        <!--作为主屏幕中显示的内容,实现下拉刷新功能-->
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/swipe_refresh"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-
+            <!--滚动的形式查看屏幕外的那部分内容-->
             <ScrollView
                 android:id="@+id/weather_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:overScrollMode="never"
                 android:scrollbars="none">
-
+                <!--ScrollView下只能包含一个子项，所以加入了一个LinearLayout-->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

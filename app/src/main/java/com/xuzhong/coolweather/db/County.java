@@ -2,6 +2,11 @@ package com.xuzhong.coolweather.db;
 
 import org.litepal.crud.DataSupport;
 
+/**
+ * 县  {"id":937,"name":"苏州","weather_id":"CN101190401"}
+ * 引入org.litepal.crud.DataSupport，会自动建立类相应的数据库，表
+ */
+
 public class County extends DataSupport {
     private int id;
     private String countyName;

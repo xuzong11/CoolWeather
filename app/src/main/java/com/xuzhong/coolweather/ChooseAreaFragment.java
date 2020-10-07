@@ -32,13 +32,17 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 public class ChooseAreaFragment extends Fragment {
+
+    //0代表 根目录即省目录，1代表市目录，2代表县目录
     public static final int LEVEL_PROVINCE = 0;
     public static final int LEVEL_CITY = 1;
     public static final int LEVEL_COUNTY = 2;
+
     private ProgressDialog progressDialog;
     private TextView titleText;
     private Button backButton;
     private ListView listView;
+
     private ArrayAdapter<String> adapter;
     private List<String> dataList = new ArrayList<>();
     /**
@@ -69,7 +73,9 @@ public class ChooseAreaFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+       //指定界面文件choose_area.xml
         View view = inflater.inflate(R.layout.choose_area, container, false);
+        //获取控件实例
         titleText = (TextView) view.findViewById(R.id.title_text);
         backButton = (Button) view.findViewById(R.id.back_button);
         listView = (ListView) view.findViewById(R.id.list_view);
@@ -86,13 +92,16 @@ public class ChooseAreaFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                //currentLevel=0为根目录
                 if (currentLevel == LEVEL_PROVINCE) {
                     selectedProvince = provinceList.get(position);
                     queryCities();
+                    //currentLevel=1为2级目录
                 } else if (currentLevel == LEVEL_CITY) {
                     selectedCity = cityList.get(position);
                     queryCounties();
                     //当前级别是LEVEL_COUNTY，就启动WeatherActivity，并把当前选中县的天气id传递过去
+                    //currentLevel=2为3级目录
                 } else if (currentLevel == LEVEL_COUNTY) {
                     String weatherId = countyList.get(position).getWeatherId();
                     //instanceof关键字可以用来判断一个对象是否属于某个类的实例
@@ -214,12 +223,16 @@ public class ChooseAreaFragment extends Fragment {
      * * 因此调用queryProvinces()就会直接将数据显示到界面上了
      */
     private void queryFromServer(String address, final String type) {
+        //显示进度对话框
         showProgressDialog();
+        //与服务器交互类，回调函数
         HttpUtil.sendOkHttpRequest(address, new Callback() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                //服务器返回的内容
                 String responseText = response.body().string();
                 boolean result = false;
+                //根据服务器返回的字符串，调用相应的解析函数解析数据
                 if ("province".equals(type)) {
                     result = Utility.handleProvinceResponse(responseText);
                 } else if ("city".equals(type)) {
@@ -228,6 +241,7 @@ public class ChooseAreaFragment extends Fragment {
                     result = Utility.handleCountyResponse(responseText, selectedCity.getId());
                 }
                 if (result) {
+                    //实现从子线程切换到主线程，操作UI
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
