@@ -78,7 +78,8 @@ public class ChooseAreaFragment extends Fragment {
         listView.setAdapter(adapter);
         return view;
     }
-//给头布局ListView和Button设置了点击事件
+
+    //给头布局ListView和Button设置了点击事件
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -92,15 +93,29 @@ public class ChooseAreaFragment extends Fragment {
                     selectedCity = cityList.get(position);
                     queryCounties();
                     //当前级别是LEVEL_COUNTY，就启动WeatherActivity，并把当前选中县的天气id传递过去
-                }else  if(currentLevel==LEVEL_COUNTY){
-                    String weatherId=countyList.get(position).getWeatherId();
-                    Intent intent=new Intent(getActivity(),WeatherActivity.class);
-                    intent.putExtra("weather_id",weatherId);
-                    startActivity(intent);
-                    getActivity().finish();
+                } else if (currentLevel == LEVEL_COUNTY) {
+                    String weatherId = countyList.get(position).getWeatherId();
+                    //instanceof关键字可以用来判断一个对象是否属于某个类的实例
+                    //碎片中调用getActivity()方法，然后配合instanceof关键字，
+                    // 就能轻松判断出该碎片是在MainActivity当中，还是在WeatherActivity当中。
+                    // 如果是在MainActivity当中，那么处理逻辑不变。如果是在WeatherActivity当中，
+                    // 那么就关闭滑动菜单，显示下拉刷新进度条，然后请求新城市的天气信息
+                    if (getActivity() instanceof MainActivity) {
+                        Intent intent = new Intent(getActivity(), WeatherActivity.class);
+                        intent.putExtra("weather_id", weatherId);
+                        startActivity(intent);
+                        getActivity().finish();
+                    } else if (getActivity() instanceof WeatherActivity) {
+                        WeatherActivity activity = (WeatherActivity) getActivity();
+                        activity.drawerLayout.closeDrawers();
+                        activity.swipeRefresh.setRefreshing(true);
+                        activity.requestWeather(weatherId);
+                    }
                 }
             }
+
         });
+
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -110,14 +125,13 @@ public class ChooseAreaFragment extends Fragment {
                     queryProvinces();
                 }
             }
+
         });
         queryProvinces();
     }
 
     /**
      * 查询全国所有的省，优先从数据库查询，如果没有查询到再去服务器上查询
-     *
-     *
      */
     private void queryProvinces() {
         //将头布局的标题设置成中国，将返回按钮隐藏起来，因为省级列表已经不能再返回了
@@ -195,9 +209,9 @@ public class ChooseAreaFragment extends Fragment {
      * 响应的数据会回调到onResponse()方法中，然后我们在这里去调用Utility的handleProvincesResponse()方法
      * 来解析和处理服务器返回的数据，并存储到数据库中
      * 在解析和处理完数据之后，我们再次调用了queryProvinces()方法来重新加载省级数据，
-     *      * 由于queryProvinces()方法牵扯到了UI操作，因此必须要在主线程中调用，
-     *      * 这里借助了runOnUiThread()方法来实现从子线程切换到主线程。现在数据库中已经存在了数据，
-     *      * 因此调用queryProvinces()就会直接将数据显示到界面上了
+     * * 由于queryProvinces()方法牵扯到了UI操作，因此必须要在主线程中调用，
+     * * 这里借助了runOnUiThread()方法来实现从子线程切换到主线程。现在数据库中已经存在了数据，
+     * * 因此调用queryProvinces()就会直接将数据显示到界面上了
      */
     private void queryFromServer(String address, final String type) {
         showProgressDialog();

@@ -34,6 +34,7 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:24.2.1'
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     testImplementation 'junit:junit:4.12'
     implementation 'org.litepal.android:core:1.4.1'     //LitePal用于对数据库进行操作
     implementation 'com.squareup.okhttp3:okhttp:3.4.1'  //OkHttp用于进行网络请求

@@ -1,6 +1,9 @@
 package com.xuzhong.coolweather;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -9,6 +12,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -44,6 +48,12 @@ public class WeatherActivity extends AppCompatActivity {
     private TextView sportText;
     //背景图片
     private ImageView bingPicImg;
+    //下拉刷新
+    public SwipeRefreshLayout swipeRefresh;
+    private  String mWeatherId;
+    //滑动菜单逻辑处理
+    public DrawerLayout drawerLayout;
+    private Button navButton;
 
 
     @Override
@@ -72,6 +82,23 @@ public class WeatherActivity extends AppCompatActivity {
         titleUpdateTime = findViewById(R.id.title_update_time);
         pm25Text = findViewById(R.id.pm25_text);
         bingPicImg = findViewById(R.id.bing_pic_img);
+        swipeRefresh=findViewById(R.id.swipe_refresh);
+        //滑动菜单
+        drawerLayout=findViewById(R.id.drawer_layout);
+        //点开滑动菜单按钮
+        navButton=findViewById(R.id.nav_button);
+        //设置下拉进度条颜色
+        swipeRefresh.setColorSchemeResources(R.color.colorPrimary);
+
+        //打开滑动菜单
+        navButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                drawerLayout.openDrawer(GravityCompat.START);
+            }
+        });
+
+
 
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -87,6 +114,7 @@ public class WeatherActivity extends AppCompatActivity {
         if (weatherString != null) {
             //有缓存时直接解析天气数据
             Weather weather = Utility.handleWeatherResponse(weatherString);
+            mWeatherId=weather.basic.weatherId;
             showWeatherInfo(weather);
         } else {
             //无缓存时去服务器查询天气
@@ -97,6 +125,13 @@ public class WeatherActivity extends AppCompatActivity {
             //从服务器请求天气数据
             requestWeather(weatherId);
         }
+        //下拉刷新的监听器
+        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                requestWeather(mWeatherId);
+            }
+        });
     }
 
     /**
@@ -140,7 +175,16 @@ public class WeatherActivity extends AppCompatActivity {
         HttpUtil.sendOkHttpRequest(weatherUrl, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-
+                e.printStackTrace();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(WeatherActivity.this, "获取天气信息失败", Toast.LENGTH_SHORT).show();
+                       //当请求结束后，调用SwipeRefreshLayout的setRefreshing()方法并传入false，用于表示刷新事件结束，并隐藏刷新进度条
+                        swipeRefresh.setRefreshing(false);
+                    }
+                });
+                loadBingPic();
             }
 
             @Override
@@ -158,10 +202,13 @@ public class WeatherActivity extends AppCompatActivity {
                                     PreferenceManager.getDefaultSharedPreferences(WeatherActivity.this).edit();
                             editor.putString("weather", responseText);
                             editor.apply();
+                            mWeatherId=weather.basic.weatherId;
                             showWeatherInfo(weather);
                         } else {
                             Toast.makeText(WeatherActivity.this, "获取天气信息失败", Toast.LENGTH_SHORT).show();
                         }
+                        //当请求结束后，还需要调用SwipeRefreshLayout的setRefreshing()方法并传入false，用于表示刷新事件结束，并隐藏刷新进度条
+                        swipeRefresh.setRefreshing(false);
                     }
                 });
             }
