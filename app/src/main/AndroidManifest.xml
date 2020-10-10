@@ -3,7 +3,7 @@
     package="com.xuzhong.coolweather">
 
     <uses-permission android:name="android.permission.INTERNET" />
-<!-- android:name=".MyApplication"-->
+
     <application
         android:name="org.litepal.LitePalApplication"
         android:allowBackup="true"
@@ -13,7 +13,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".WeatherActivity"></activity>
+        <service
+            android:name=".service.AutoUpdateService"
+            android:enabled="true"
+            android:exported="true"></service>
+
+        <activity android:name=".WeatherActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
